@@ -6,6 +6,17 @@ import ConversionSelector from "./conversion_selector.js";
 function App() {
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [file, setFile] = useState(null);
+
+  const handleFileChange = (event) => {
+    console.log("Event object:", event);
+    const selectedFile = event.target.files ? event.target.files[0] : null;
+    console.log("Selected file:", selectedFile);
+    if (selectedFile) {
+      setFile(selectedFile); // Store the file when selected
+    }
+  };
 
   const handleFileUpload = async (event) => {
     try {
@@ -17,8 +28,11 @@ function App() {
 
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("selectedType", selectedType);
 
-      const response = await fetch("http://127.0.0.1:3001/uploads", {
+      console.log("File name:", file.name);
+      console.log("Selected type:", selectedType);
+      const response = await fetch("http://127.0.0.1:8000/upload", {
         method: "POST",
         body: formData,
         headers: {
@@ -47,6 +61,10 @@ function App() {
     }
   };
 
+  const handleConversionTypeChange = (value) => {
+    setSelectedType(value);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -58,11 +76,18 @@ function App() {
             <input
               type="file"
               accept=".txt,.pdf,.png,.jpg,.jpeg,.gif"
-              onChange={handleFileUpload}
+              onChange={handleFileChange}
+              id="fileInput:"
             />
           </label>
         </div>
-        <ConversionSelector />
+        <div>
+          <ConversionSelector onSelect={handleConversionTypeChange} />
+          <button onClick={handleFileUpload} disabled={!file || !selectedType}>
+            Submit
+          </button>
+        </div>
+
         <div className="text-display">
           {error && <div className="error-message">{error}</div>}
           <textarea
