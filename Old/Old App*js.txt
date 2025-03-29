@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+import logo from './logo.svg';
+import './App.css';
+
+function App() {
+  const [isUploading, setIsUploading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleFileUpload = async (event) => {
+    setIsUploading(true);
+    setMessage('');
+
+    try {
+      const file = event.target.files[0];
+      if (!file) {
+        setMessage('Please select a file');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('http://localhost:3001/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload file');
+      }
+
+      const data = await response.json();
+      setMessage('File uploaded successfully!');
+    } catch (error) {
+      setMessage('Error uploading file. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>HTR AI to Latex</h1>
+        <div className="upload-section">
+          <label className="upload-button">
+            {isUploading ? 'Uploading...' : 'Upload File'}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              disabled={isUploading}
+            />
+          </label>
+          {message && (
+            <p style={{ marginTop: '10px', textAlign: 'center' }}>{message}</p>
+          )}
+        </div>
+        <div className="text-display">
+          <textarea 
+            className="text-output" 
+            rows="10" 
+            readOnly
+            placeholder="Text Display"
+          >
+          </textarea>
+        </div>
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+    </div>
+  );
+}
+
+export default App;
