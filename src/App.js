@@ -1,7 +1,7 @@
 // import logo from "./logo.svg";
 import "./App.css";
 import { useState } from "react";
-import "./conversion_selector";
+import ConversionSelector from "./conversion_selector.js";
 
 function App() {
   const [result, setResult] = useState("");
@@ -62,21 +62,7 @@ function App() {
             />
           </label>
         </div>
-        <div className="conversion-selector">
-          <label htmlFor="conversion-type">Select Conversion Type:</label>
-          <select
-            id="conversion-type"
-            onChange={(e) =>
-              console.log("Selected conversion type: ", e.target.value)
-            }
-          >
-            <option value="" disabled>
-              -- Select an option --
-            </option>
-            <option value="one-pager-notes">One-Pager Notes Sheet</option>
-            <option value="homework-assignment">Homework Assignment</option>
-          </select>
-        </div>
+        <ConversionSelector />
         <div className="text-display">
           {error && <div className="error-message">{error}</div>}
           <textarea
