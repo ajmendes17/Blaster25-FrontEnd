@@ -126,7 +126,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>tex-it</h1>
+        <h1>TeX-it</h1>
       </header>
       <h2>Please upload the document you'd like converted to LaTeX.</h2>
       <div className="box-container">
