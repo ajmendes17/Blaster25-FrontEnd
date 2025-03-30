@@ -18,24 +18,13 @@ h1 {
   color: #282c34;
   font-size: 2.5rem;
   margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  margin: -40px 0 20px 0;
-  max-width: 200px; /* Add max-width to prevent logo from being too large */
-}
 
-.App-link {
-  color: #61dafb;
-  text-decoration: none;
-  font-size: 1.5rem;
-  margin-top: 20px;
-}
 
-.App-link:hover {
-  color: #4fa8d3;
-}
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
@@ -52,7 +41,7 @@ h1 {
 .upload-button {
   display: inline-block;
   padding: 12px 24px;
-  background-color: #61dafb;
+  background-color: #39A2AE;
   color: black;
   text-decoration: none;
   border-radius: 4px;
@@ -62,7 +51,7 @@ h1 {
 }
 
 .upload-button:hover {
-  background-color: #4fa8d3;
+  background-color: #57cad7;
 }
 
 .upload-button:disabled {

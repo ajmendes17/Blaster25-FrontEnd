@@ -1,7 +1,7 @@
 import "./App.css";
 import { useState } from "react";
-import React from 'react';
-import Latex from 'react-latex';
+import React from "react";
+import Latex from "react-latex";
 import "katex/dist/katex.min.css";
 
 function App() {
@@ -12,14 +12,15 @@ function App() {
   const [latexCode, setLatexCode] = useState("");
   const [modifiedResult, setModifiedResult] = useState(""); // State for the modified LaTeX content
 
-  const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || "http://127.0.0.1:3001";
+  const API_ENDPOINT =
+    process.env.REACT_APP_API_ENDPOINT || "http://127.0.0.1:3001";
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setSelectedFile(file);
       setError(""); // Clear error when file is selected
-      console.log('Selected file:', file.name, file.type); // Log the file name and type
+      console.log("Selected file:", file.name, file.type); // Log the file name and type
     }
   };
 
@@ -51,9 +52,11 @@ function App() {
       // Create form data
       const formData = new FormData();
       formData.append("file", selectedFile);
-      
+
       // Add the prompt as a query parameter
-      const uploadUrl = `${API_ENDPOINT}/uploads?prompt=${encodeURIComponent(prompt)}`;
+      const uploadUrl = `${API_ENDPOINT}/uploads?prompt=${encodeURIComponent(
+        prompt
+      )}`;
 
       const response = await fetch(uploadUrl, {
         method: "POST",
@@ -63,7 +66,7 @@ function App() {
       if (!response.ok) {
         const responseText = await response.text();
         console.error("Server response:", responseText);
-        
+
         try {
           const errorData = await response.json();
           if (errorData.detail) {
@@ -72,7 +75,9 @@ function App() {
           throw new Error(errorData.message || "Failed to upload file");
         } catch (jsonError) {
           if (responseText.startsWith("<!DOCTYPE html")) {
-            throw new Error("Invalid response from server. Please check the backend.");
+            throw new Error(
+              "Invalid response from server. Please check the backend."
+            );
           }
           throw new Error("Invalid JSON response from server: " + responseText);
         }
@@ -86,10 +91,12 @@ function App() {
 
         const extractLatexContent = (fullLatex) => {
           if (!fullLatex) return "Error: No LaTeX content found.";
-          
+
           // Regular expression to match content inside \begin{document} and \end{document}
-          const match = fullLatex.match(/\\begin{document}([\s\S]*?)\\end{document}/);
-        
+          const match = fullLatex.match(
+            /\\begin{document}([\s\S]*?)\\end{document}/
+          );
+
           if (match && match[1]) {
             // Return the content inside \begin{document} and \end{document}, trimmed of extra whitespace
             return match[1].trim();
@@ -97,10 +104,12 @@ function App() {
             return "Error: Could not extract content.";
           }
         };
-        
+
         // Set the modified result
-        setModifiedResult(extractLatexContent(data.latex_code) || "Error: Could not extract content.");
-        
+        setModifiedResult(
+          extractLatexContent(data.latex_code) ||
+            "Error: Could not extract content."
+        );
       } else {
         setError(data.message || "An error occurred during upload.");
         setResult("");
@@ -117,9 +126,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>HTR AI to Latex</h1>
+        <h1>tex-it</h1>
         <h2>Upload the document you'd like converted to LaTeX:</h2>
-        <div className={`upload-section ${!selectedFile && error ? 'error' : ''}`}>
+        <div
+          className={`upload-section ${!selectedFile && error ? "error" : ""}`}
+        >
           <label className="upload-button">
             Upload File
             <input
@@ -139,7 +150,7 @@ function App() {
               onChange={handlePromptChange}
               className="prompt-input"
             />
-            <button 
+            <button
               className="prompt-button"
               onClick={handlePromptConfirm}
               disabled={!prompt}
@@ -147,7 +158,7 @@ function App() {
               {prompt ? "Prompt Set" : "Set Prompt"}
             </button>
           </div>
-          <button 
+          <button
             className="submit-button"
             onClick={handleFileUpload}
             disabled={!selectedFile || !prompt}
@@ -156,17 +167,13 @@ function App() {
           </button>
         </div>
         <div className="text-display">
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
+          {error && <div className="error-message">{error}</div>}
           <textarea
             className="text-output"
             rows="10"
             value={result}
             onChange={(e) => setResult(e.target.value)}
-          ></textarea> 
+          ></textarea>
           <div className="latex-output">
             <Latex displayMode={true}>{modifiedResult}</Latex>
           </div>
