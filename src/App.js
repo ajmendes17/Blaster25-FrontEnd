@@ -127,10 +127,17 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>tex-it</h1>
-        <h2>Upload the document you'd like converted to LaTeX:</h2>
+      </header>
+      <h2>Please upload the document you'd like converted to LaTeX.</h2>
+      <div className="box-container">
         <div
           className={`upload-section ${!selectedFile && error ? "error" : ""}`}
         >
+          <p>
+            {" "}
+            Select a file and submit a prompt. If you'd like the default
+            settings, type "LaTeX".
+          </p>
           <label className="upload-button">
             Upload File
             <input
@@ -139,6 +146,7 @@ function App() {
               onChange={handleFileChange}
               id="fileInput"
             />
+            <p>File types accepted: .txt,.pdf,.png,.jpg,.jpeg,.gif</p>
           </label>
         </div>
         <div className="button-container">
@@ -166,19 +174,20 @@ function App() {
             Submit
           </button>
         </div>
-        <div className="text-display">
-          {error && <div className="error-message">{error}</div>}
-          <textarea
-            className="text-output"
-            rows="10"
-            value={result}
-            onChange={(e) => setResult(e.target.value)}
-          ></textarea>
-          <div className="latex-output">
-            <Latex displayMode={true}>{modifiedResult}</Latex>
-          </div>
+      </div>
+
+      <div className="text-display">
+        {error && <div className="error-message">{error}</div>}
+        <textarea
+          className="text-output"
+          rows="10"
+          value={result}
+          onChange={(e) => setResult(e.target.value)}
+        ></textarea>
+        <div className="latex-output">
+          <Latex displayMode={true}>{modifiedResult}</Latex>
         </div>
-      </header>
+      </div>
     </div>
   );
 }

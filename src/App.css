@@ -1,5 +1,5 @@
 .App {
-  width: 100vw; /* Full viewport width */
+  width: 97vw; /* Full viewport width */
   min-height: 100vh; /* Full viewport height */
   margin: 0;
   padding: 20px;
@@ -10,25 +10,47 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 10vh;
   padding: 20px;
+  /* border-top: 100px solid #39A2AE; */
+  background-color: #39A2AE;
 }
 
 h1 {
   color: #282c34;
   font-size: 2.5rem;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: bold;
 }
 
+p {
+  color: #282c34;
+  font-size: .75rem;
+}
 
+body {
+  align-items: center;
+}
 
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+
+.box-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Upload Section Styles */
