@@ -11,6 +11,15 @@ function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [latexCode, setLatexCode] = useState("");
   const [modifiedResult, setModifiedResult] = useState(""); // State for the modified LaTeX content
+  
+  const subjects = ['calculus', , 'linear algebra', 'discrete math', 'algorithms', 'statistics']
+  const topics = { 
+    calculus: ['integral', 'derivative', 'series', 'multivariable calculus', 'differential equations'],
+    linear: ['matrices', 'determinants', 'vector spaces', 'linear dependence', 'basis and dimension', 'linear transformations', 'eigenvalues and eigenvectors', 'orthogonality', 'QR decomposition', 'singular value decomposition (SVD)'],
+    discrete: ['proof techniques', 'graph theory', 'set theory', 'group theory', 'logic', 'combinatorics', 'recurrence relations', 'Boolean algebra', 'number theory', 'automata theory'],
+    algorithms: ['sorting algorithms', 'searching algorithms', 'graphs (BFS, DFS, shortest paths)', 'dynamic programming', 'divide and conquer', 'greedy algorithms', 'NP-completeness', 'approximation algorithms', 'randomized algorithms'],
+    statistics: ['probability', 'random variables', 'Bayesian inference', 'hypothesis testing', 'confidence intervals', 'regression analysis', 'central limit theorem', 'Markov chains', 'statistical distributions'] 
+  }
 
   const API_ENDPOINT =
     process.env.REACT_APP_API_ENDPOINT || "http://127.0.0.1:3001";
@@ -21,6 +30,24 @@ function App() {
       setSelectedFile(file);
       setError(""); // Clear error when file is selected
       console.log("Selected file:", file.name, file.type); // Log the file name and type
+    }
+  };
+
+  const generatePrompt = async () => {
+    try {
+      const response = await axios.post('http://127.0.0.1:3001/generate-prompt', {
+        subject: subject,
+        words: selectedWords
+      });
+      
+      console.log('Generated prompt:', response.data.prompt);
+      
+      // Notify parent component that prompt was generated
+      if (onPromptGenerated) {
+        onPromptGenerated(response.data.prompt);
+      }
+    } catch (error) {
+      console.error('Error generating prompt:', error);
     }
   };
 
@@ -127,17 +154,10 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>tex-it</h1>
-      </header>
-      <h2>Please upload the document you'd like converted to LaTeX.</h2>
-      <div className="box-container">
+        <h2>Upload the document you'd like converted to LaTeX:</h2>
         <div
           className={`upload-section ${!selectedFile && error ? "error" : ""}`}
         >
-          <p>
-            {" "}
-            Select a file and submit a prompt. If you'd like the default
-            settings, type "LaTeX".
-          </p>
           <label className="upload-button">
             Upload File
             <input
@@ -146,7 +166,6 @@ function App() {
               onChange={handleFileChange}
               id="fileInput"
             />
-            <p>File types accepted: .txt,.pdf,.png,.jpg,.jpeg,.gif</p>
           </label>
         </div>
         <div className="button-container">
@@ -174,20 +193,19 @@ function App() {
             Submit
           </button>
         </div>
-      </div>
-
-      <div className="text-display">
-        {error && <div className="error-message">{error}</div>}
-        <textarea
-          className="text-output"
-          rows="10"
-          value={result}
-          onChange={(e) => setResult(e.target.value)}
-        ></textarea>
-        <div className="latex-output">
-          <Latex displayMode={true}>{modifiedResult}</Latex>
+        <div className="text-display">
+          {error && <div className="error-message">{error}</div>}
+          <textarea
+            className="text-output"
+            rows="10"
+            value={result}
+            onChange={(e) => setResult(e.target.value)}
+          ></textarea>
+          <div className="latex-output">
+            <Latex displayMode={true}>{modifiedResult}</Latex>
+          </div>
         </div>
-      </div>
+      </header>
     </div>
   );
 }
