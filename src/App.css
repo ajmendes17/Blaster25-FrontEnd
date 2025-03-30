@@ -1,6 +1,7 @@
 .App {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100vw; /* Full viewport width */
+  min-height: 100vh; /* Full viewport height */
+  margin: 0;
   padding: 20px;
 }
 
@@ -8,9 +9,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-  display: flex;
   justify-content: center;
+  height: 100vh;
+  padding: 20px;
 }
 
 h1 {
@@ -22,6 +23,7 @@ h1 {
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   margin: -40px 0 20px 0;
+  max-width: 200px; /* Add max-width to prevent logo from being too large */
 }
 
 .App-link {
@@ -76,10 +78,11 @@ h1 {
 .upload-section.error {
   border: 2px solid red;
 }
+
 /* Submit Button Styles */
 .submit-button {
   padding: 12px 24px;
-  background-color: #4CAF50;
+  background-color: #4bae4e;
   color: white;
   border: none;
   border-radius: 4px;
@@ -98,13 +101,18 @@ h1 {
   cursor: not-allowed;
 }
 
-/* Rest of your CSS remains the same */
-
 /* Text Display Section Styles */
 .text-display {
   margin: 20px 0;
   width: 100%;
   max-width: 800px;
+}
+
+/* Output Container for side-by-side display */
+.output-container {
+  display: flex;
+  gap: 20px;
+  width: 100%;
 }
 
 .text-output {
@@ -115,7 +123,19 @@ h1 {
   resize: vertical;
   min-height: 150px;
   font-family: Arial, sans-serif;
-  font-size: 16px;
+  font-size: 12px;
+}
+
+.latex-output {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 150px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  background-color: #f5f5f5;
 }
 
 /* Optional: Add some padding to the code element */
@@ -138,5 +158,14 @@ code {
 
   h1 {
     font-size: 2rem;
+  }
+
+  .output-container {
+    flex-direction: column;
+  }
+
+  .text-output,
+  .latex-output {
+    width: 100%;
   }
 }

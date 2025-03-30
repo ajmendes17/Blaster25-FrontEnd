@@ -1,12 +1,18 @@
 import "./App.css";
 import { useState } from "react";
-import ConversionSelector from "./conversion_selector.js";
+import React from 'react';
+import Latex from 'react-latex';
+import "katex/dist/katex.min.css";
 
 function App() {
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
-  const [selectedType, setSelectedType] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [latexCode, setLatexCode] = useState("");
+  const [modifiedResult, setModifiedResult] = useState(""); // State for the modified LaTeX content
+
+  const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || "http://127.0.0.1:3001";
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -17,59 +23,95 @@ function App() {
     }
   };
 
+  const handlePromptChange = (event) => {
+    setPrompt(event.target.value);
+    setError(""); // Clear error when prompt is entered
+  };
+
+  const handlePromptConfirm = () => {
+    if (!prompt) {
+      setError("Please enter a prompt");
+      return;
+    }
+    setError(""); // Clear error when prompt is confirmed
+  };
+
   const handleFileUpload = async () => {
     try {
-      // Clear previous results and errors
       setResult("");
       setError("");
 
       if (!selectedFile) {
         throw new Error("Please select a file first");
       }
-      if (!selectedType || selectedType === "") {
-        throw new Error("Please select a conversion type");
+      if (!prompt) {
+        throw new Error("Please enter a prompt");
       }
 
-      console.log("Selected Type:", selectedType); // Debug log
-
+      // Create form data
       const formData = new FormData();
       formData.append("file", selectedFile);
-      formData.append("selectedType", selectedType);
+      
+      // Add the prompt as a query parameter
+      const uploadUrl = `${API_ENDPOINT}/uploads?prompt=${encodeURIComponent(prompt)}`;
 
-      const response = await fetch("http://127.0.0.1:3001/uploads", {
+      const response = await fetch(uploadUrl, {
         method: "POST",
         body: formData,
-        // Remove the Content-Type header as FormData handles it
-        // headers: {
-        //   "Content-Type": "multipart/form-data",
-        // },
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to upload file");
+        const responseText = await response.text();
+        console.error("Server response:", responseText);
+        
+        try {
+          const errorData = await response.json();
+          if (errorData.detail) {
+            throw new Error(errorData.detail[0].msg || "Failed to upload file");
+          }
+          throw new Error(errorData.message || "Failed to upload file");
+        } catch (jsonError) {
+          if (responseText.startsWith("<!DOCTYPE html")) {
+            throw new Error("Invalid response from server. Please check the backend.");
+          }
+          throw new Error("Invalid JSON response from server: " + responseText);
+        }
       }
 
       const data = await response.json();
       if (data.status === "success") {
         console.log("Success:", data);
-        setResult(data.message || "File sent successfully!");
+        setResult(data.latex_code || "Couldn't find latex code");
         setError("");
+
+        const extractLatexContent = (fullLatex) => {
+          if (!fullLatex) return "Error: No LaTeX content found.";
+          
+          // Regular expression to match content inside \begin{document} and \end{document}
+          const match = fullLatex.match(/\\begin{document}([\s\S]*?)\\end{document}/);
+        
+          if (match && match[1]) {
+            // Return the content inside \begin{document} and \end{document}, trimmed of extra whitespace
+            return match[1].trim();
+          } else {
+            return "Error: Could not extract content.";
+          }
+        };
+        
+        // Set the modified result
+        setModifiedResult(extractLatexContent(data.latex_code) || "Error: Could not extract content.");
+        
       } else {
         setError(data.message || "An error occurred during upload.");
         setResult("");
+        setModifiedResult("");
       }
     } catch (error) {
       console.error("Error sending file:", error);
       setError(error.message || "An error occurred while sending the file.");
       setResult("");
+      setModifiedResult("");
     }
-  };
-
-  const handleConversionTypeChange = (value) => {
-    console.log("Conversion type selected:", value); // Debug log
-    setSelectedType(value);
-    setError(""); // Clear error when conversion type is selected
   };
 
   return (
@@ -89,18 +131,30 @@ function App() {
           </label>
         </div>
         <div className="button-container">
-          <ConversionSelector 
-            onSelect={handleConversionTypeChange} 
-            selectedType={selectedType}
-          />
+          <div className="prompt-input-container">
+            <input
+              type="text"
+              placeholder="Enter your prompt here..."
+              value={prompt}
+              onChange={handlePromptChange}
+              className="prompt-input"
+            />
+            <button 
+              className="prompt-button"
+              onClick={handlePromptConfirm}
+              disabled={!prompt}
+            >
+              {prompt ? "Prompt Set" : "Set Prompt"}
+            </button>
+          </div>
           <button 
             className="submit-button"
             onClick={handleFileUpload}
+            disabled={!selectedFile || !prompt}
           >
             Submit
           </button>
         </div>
-
         <div className="text-display">
           {error && (
             <div className="error-message">
@@ -111,8 +165,11 @@ function App() {
             className="text-output"
             rows="10"
             value={result}
-            readOnly
-          ></textarea>
+            onChange={(e) => setResult(e.target.value)}
+          ></textarea> 
+          <div className="latex-output">
+            <Latex displayMode={true}>{modifiedResult}</Latex>
+          </div>
         </div>
       </header>
     </div>
